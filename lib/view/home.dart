@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:want_advice/api/get_data_api.dart';
 import 'package:want_advice/shared/custom_colors.dart';
 import 'package:want_advice/shared/custom_texts.dart';
+import 'package:want_advice/view/view_advice.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,6 +15,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String adviceExample = "amor";
+  TextEditingController _queryController = TextEditingController();
   List<String> listAdviceExample = [
     "amor",
     "vida",
@@ -51,8 +54,12 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Container(
           width: size.width,
@@ -61,33 +68,65 @@ class _HomeState extends State<Home> {
               image: DecorationImage(
                   image: AssetImage('assets/images/background.png'),
                   fit: BoxFit.cover)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CustomText(text: 'Quer um', size: 96, color: fontColor),
-              const CustomText(text: 'Conselho?', size: 96, color: fontColor),
-              const Padding(
-                padding: EdgeInsets.only(top: 40, bottom: 65),
-                child: CustomText(
-                  text:
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CustomText(text: 'Quer um', size: 96, color: fontColor),
+                  const CustomText(
+                      text: 'Conselho?', size: 96, color: fontColor),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 40, bottom: 65),
+                    child: CustomText(
+                      text:
                       'Ganhe um conselho motivacional \n(ou não) a qualquer hora',
-                  align: TextAlign.center,
-                  size: 28,
-                ),
+                      align: TextAlign.center,
+                      size: 28,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: TextField(
+                      controller: _queryController,
+                      decoration: InputDecoration(
+                          hintText: "Quero um conselho sobre: $adviceExample",
+                          filled: true,
+                          fillColor: textFieldBackground,
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide(width: 5),
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(25)))),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 50),
+                    child: SizedBox(
+                      width: 250,
+                      height: 60,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                            const MaterialStatePropertyAll(Colors.black),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    side: const BorderSide(color: fontColor)))),
+                        onPressed: () {
+                          ShowAdvice(context: context,query: _queryController.text).initShowAdvice();
+                        },
+                        child: const CustomText(
+                          text: "Quero meu Conselho",
+                          color: fontColor,
+                          size: 35,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: TextField(
-                  decoration: InputDecoration(
-                      hintText: "Quero um conselho sobre: $adviceExample",
-                      filled: true,
-                      fillColor: textFieldBackground,
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(width: 5),
-                          borderRadius: BorderRadius.all(Radius.circular(25)))),
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),
