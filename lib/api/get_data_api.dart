@@ -9,7 +9,6 @@ Future<dynamic> fetchData(String query) async {
 
   if (response.statusCode == 200) {
     data = jsonDecode(response.body);
-    print(data);
   } else {
     print('ERRO ON GET HTTP');
   }

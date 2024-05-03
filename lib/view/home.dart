@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:want_advice/api/get_data_api.dart';
+import 'package:translator/translator.dart';
 import 'package:want_advice/shared/custom_colors.dart';
 import 'package:want_advice/shared/custom_texts.dart';
 import 'package:want_advice/view/view_advice.dart';
@@ -16,6 +16,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String adviceExample = "amor";
   TextEditingController _queryController = TextEditingController();
+  final translator = GoogleTranslator();
+
   List<String> listAdviceExample = [
     "amor",
     "vida",
@@ -54,9 +56,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery
-        .of(context)
-        .size;
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
@@ -80,7 +80,7 @@ class _HomeState extends State<Home> {
                     padding: EdgeInsets.only(top: 40, bottom: 65),
                     child: CustomText(
                       text:
-                      'Ganhe um conselho motivacional \n(ou não) a qualquer hora',
+                          'Ganhe um conselho motivacional \n(ou não) a qualquer hora',
                       align: TextAlign.center,
                       size: 28,
                     ),
@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
                           border: const OutlineInputBorder(
                               borderSide: BorderSide(width: 5),
                               borderRadius:
-                              BorderRadius.all(Radius.circular(25)))),
+                                  BorderRadius.all(Radius.circular(25)))),
                     ),
                   ),
                   Padding(
@@ -107,14 +107,25 @@ class _HomeState extends State<Home> {
                       child: ElevatedButton(
                         style: ButtonStyle(
                             backgroundColor:
-                            const MaterialStatePropertyAll(Colors.black),
+                                const MaterialStatePropertyAll(Colors.black),
                             shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
+                                    RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                     side: const BorderSide(color: fontColor)))),
                         onPressed: () {
-                          ShowAdvice(context: context,query: _queryController.text).initShowAdvice();
+                          final query = _queryController.text.trim();
+                          translator
+                              .translate(query, from: 'pt', to: 'en')
+                              .then((value) {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) => ShowAdvice(
+                                      query: value.toString(),
+                                      originalText: query,
+                                    ));
+                          });
+                          _queryController.clear();
                         },
                         child: const CustomText(
                           text: "Quero meu Conselho",
@@ -122,6 +133,13 @@ class _HomeState extends State<Home> {
                           size: 35,
                         ),
                       ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: const Text(
+                      'Vesion 1.0',
+                      style: TextStyle(color: Colors.white),
                     ),
                   )
                 ],
